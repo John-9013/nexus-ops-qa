@@ -2,6 +2,8 @@
 
 Panel web para gestionar órdenes de mantenimiento multi-sede y probar la resiliencia de una API de salud simulando respuestas HTTP `200`, `400`, `404` y `500`.
 
+![Nexus Ops QA](docs/screenshot.png)
+
 ## Stack
 
 - [Next.js](https://nextjs.org/) 16 (App Router)
@@ -39,6 +41,8 @@ lib/
   qa-validators.ts      Validación de órdenes y mensajes HTTP simulados
 models/
   operations.ts         Tipos e interfaces compartidos
+docs/
+  screenshot.png        Captura usada en este README
 ```
 
 ## Endpoint de salud
