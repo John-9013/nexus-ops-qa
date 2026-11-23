@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nexus Ops QA
 
-## Getting Started
+Panel web para gestionar órdenes de mantenimiento multi-sede y probar la resiliencia de una API de salud simulando respuestas HTTP `200`, `400`, `404` y `500`.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Next.js](https://nextjs.org/) 16 (App Router)
+- React 19
+- TypeScript (modo `strict`)
+- Tailwind CSS 4
+- ESLint
+
+## Funcionalidades
+
+**Gestión de operaciones multi-sede**
+- Registro de órdenes con título, sucursal, categoría, prioridad, costo estimado y fecha programada.
+- Validación de reglas de negocio antes de guardar, con mensajes de error por campo.
+- Filtros por sucursal y estado, y total de costo del filtro aplicado.
+- Cambio de estado (`Pendiente`, `En proceso`, `Completado`) y eliminación de órdenes.
+- Persistencia en `localStorage`: las órdenes sobreviven a recargar la página.
+
+**Laboratorio API y monitoreo QA**
+- Consulta a `/api/health?status=<código>` con los códigos `200`, `400`, `404` y `500`.
+- Medición de latencia, historial de las últimas 12 pruebas y contadores de éxitos e incidencias.
+- Ejecución individual o de los cuatro escenarios seguidos.
+- Manejo de error de red sin romper la interfaz.
+
+## Estructura
+
+```
+app/
+  api/health/route.ts   Endpoint GET que simula 200, 400, 404 y 500
+  layout.tsx            Layout raíz y metadatos
+  page.tsx              Página principal
+components/
+  OperationsManager.tsx Gestión de órdenes de mantenimiento
+  ApiQaDashboard.tsx    Pruebas del endpoint de salud
+lib/
+  qa-validators.ts      Validación de órdenes y mensajes HTTP simulados
+models/
+  operations.ts         Tipos e interfaces compartidos
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Endpoint de salud
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+GET /api/health?status=200|400|404|500
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Sin parámetro, o con un valor no permitido, responde `200`.
 
-## Learn More
+```json
+{
+  "service": "nexus-ops-qa-api",
+  "status": "healthy",
+  "statusCode": 200,
+  "latencyMs": 0,
+  "timestamp": "2026-11-23T19:00:00.000Z"
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Cómo ejecutarlo
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Abre [http://localhost:3000](http://localhost:3000).
 
-## Deploy on Vercel
+Otros comandos:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint        # ESLint
+npx tsc --noEmit    # Verificación de tipos
+npm run build       # Build de producción
+```
